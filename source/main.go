@@ -1,24 +1,36 @@
 package main
 
 import (
-	"fmt"
+	"flag"
+
+	"gonum.org/v1/plot"
 )
 
-type App struct {
-}
-
 func main() {
-	//if os.Args[1] == "help" {
-	//		fmt.Println("MGC - Mint Graphics calc commands : \n 1. help - show help info \n 2. version - show version of program \n 3. save - saving your last graphic")
-	//	} else if os.Args[1] == "version" {
-	//		fmt.Println("MGC version : 0.1.0")
-	//	}
 
-	mp := MathParser{}
+	formula := flag.String("f", "x^2", "formula")
+	min := flag.Float64("min", -10, "min x")
+	max := flag.Float64("max", 10, "max x")
+	step := flag.Float64("step", 0.1, "step")
+	output := flag.String("out", "graph.png", "output file")
 
-	form := "10*x + 11"
-	tokens := MakeTokens(form)
+	flag.Parse()
 
-	y := mp.Eval(tokens, float64(5))
-	fmt.Printf("%.2f %.2f\n", float64(5), y)
+	tokens := MakeTokens(*formula)
+	parser := &MathParser{}
+
+	p := plot.New()
+	p.Title.Text = *formula
+	p.X.Label.Text = "X"
+	p.Y.Label.Text = "Y"
+
+	points := []float64{}
+
+	for x := *min; x <= *max; x += *step {
+		y := parser.Eval(tokens, x)
+		points = append(points, x)
+		points = append(points, y)
+	}
+
+	MakeGraphic(p, min, max, step, points, *output)
 }

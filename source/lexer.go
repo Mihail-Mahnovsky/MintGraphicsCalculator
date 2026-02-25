@@ -19,6 +19,10 @@ const (
 	Pi
 	Gr
 	X
+	Assign
+	Pow
+	Sqrt
+	Log
 	Eof
 )
 
@@ -46,6 +50,10 @@ func MakeTokens(line string) []Token {
 			tokens = append(tokens, Token{RParen, 0})
 		case 'x':
 			tokens = append(tokens, Token{X, 0})
+		case '=':
+			tokens = append(tokens, Token{Assign, 0})
+		case '^':
+			tokens = append(tokens, Token{Pow, 0})
 		default:
 			{
 				if unicode.IsLetter(rune(line[pos])) {
@@ -63,12 +71,16 @@ func MakeTokens(line string) []Token {
 						tokens = append(tokens, Token{Pi, 0})
 					case "GR":
 						tokens = append(tokens, Token{Gr, 0})
-					case "SIN":
+					case "sin":
 						tokens = append(tokens, Token{Sin, 0})
-					case "COS":
+					case "cos":
 						tokens = append(tokens, Token{Cos, 0})
-					case "TAN":
+					case "tan":
 						tokens = append(tokens, Token{Tan, 0})
+					case "sqrt":
+						tokens = append(tokens, Token{Sqrt, 0})
+					case "log":
+						tokens = append(tokens, Token{Log, 0})
 					}
 				} else if unicode.IsDigit(rune(line[pos])) {
 

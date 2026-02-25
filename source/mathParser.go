@@ -53,20 +53,31 @@ func (m *MathParser) addSub() float64 {
 }
 
 func (m *MathParser) mulDiv() float64 {
-	value := m.factor()
+	value := m.power()
 
 	for {
 		switch m.current().t {
 		case Mul:
 			m.eat(Mul)
-			value *= m.factor()
+			value *= m.power()
 		case Div:
 			m.eat(Div)
-			value /= m.factor()
+			value /= m.power()
 		default:
 			return value
 		}
 	}
+}
+
+func (m *MathParser) power() float64 {
+	value := m.factor()
+
+	for m.current().t == Pow {
+		m.eat(Pow)
+		value = math.Pow(value, m.power())
+	}
+
+	return value
 }
 
 func (m *MathParser) factor() float64 {
@@ -79,6 +90,39 @@ func (m *MathParser) factor() float64 {
 	case Number:
 		m.eat(Number)
 		return token.v
+	case Cos:
+		m.eat(Cos)
+		m.eat(LParen)
+		res := m.expression()
+		m.eat(RParen)
+		//res = res * math.Pi / 180
+		return math.Cos(res)
+	case Sin:
+		m.eat(Sin)
+		m.eat(LParen)
+		res := m.expression()
+		m.eat(RParen)
+		//res = res * math.Pi / 180
+		return math.Sin(res)
+	case Tan:
+		m.eat(Tan)
+		m.eat(LParen)
+		res := m.expression()
+		m.eat(RParen)
+		//res = res * math.Pi / 180
+		return math.Tan(res)
+	case Sqrt:
+		m.eat(Sqrt)
+		m.eat(LParen)
+		res := m.expression()
+		m.eat(RParen)
+		return math.Sqrt(res)
+	case Log:
+		m.eat(Log)
+		m.eat(LParen)
+		res := m.expression()
+		m.eat(RParen)
+		return math.Log(res)
 	case Pi:
 		m.eat(Pi)
 		return math.Pi
